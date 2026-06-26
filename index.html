@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kid Games Hub</title>
+    <style>
+        :root {
+            --primary: #ff4757;
+            --secondary: #2ed573;
+            --accent: #1e90ff;
+            --background: #f1f2f6;
+            --card-bg: #ffffff;
+            --text: #2f3542;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: bounce 2s infinite alternate;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: var(--primary);
+            text-shadow: 3px 3px 0px #ffeaa7;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #747d8c;
+            font-weight: 500;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border: 4px solid transparent;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .game-card.game1:hover { border-color: var(--primary); }
+        .game-card.game2:hover { border-color: var(--secondary); }
+        .game-card.game3:hover { border-color: var(--accent); }
+
+        .game-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .game-desc {
+            font-size: 1rem;
+            color: #a4b0be;
+            margin-bottom: 1.5rem;
+        }
+
+        .play-btn {
+            background: #ffeaa7;
+            color: var(--text);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .game-card.game1 .play-btn { background: #ff7675; color: white; }
+        .game-card.game2 .play-btn { background: #55efc4; color: white; }
+        .game-card.game3 .play-btn { background: #74b9ff; color: white; }
+
+        .play-btn:hover {
+            filter: brightness(0.9);
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎮 Kid Games Hub 🕹️</h1>
+        <p>Pick a game and start playing!</p>
+    </header>
+
+    <main class="games-grid">
+        <!-- Game 1 Card -->
+        <div class="game-card game1" onclick="alert('Memory Match coming soon!')">
+            <div>
+                <div class="game-icon">🧠</div>
+                <h2 class="game-title">Memory Match</h2>
+                <p class="game-desc">Flip the cards and find the matching pairs before time runs out!</p>
+            </div>
+            <a href="#" class="play-btn">Play Now</a>
+        </div>
+
+        <!-- Game 2 Card -->
+        <div class="game-card game2" onclick="alert('Tic-Tac-Toe coming soon!')">
+            <div>
+                <div class="game-icon">❌⭕</div>
+                <h2 class="game-title">Tic-Tac-Toe</h2>
+                <p class="game-desc">Play against a friend or a smart computer robot!</p>
+            </div>
+            <a href="#" class="play-btn">Play Now</a>
+        </div>
+
+        <!-- Game 3 Card -->
+        <div class="game-card game3" onclick="alert('Coloring Book coming soon!')">
+            <div>
+                <div class="game-icon">🎨</div>
+                <h2 class="game-title">Coloring Book</h2>
+                <p class="game-desc">Unleash your creativity with beautiful colors and pictures.</p>
+            </div>
+            <a href="#" class="play-btn">Play Now</a>
+        </div>
+    </main>
+
+</body>
+</html>
