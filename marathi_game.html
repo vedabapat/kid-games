@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuthe Aahe? - Learn Marathi</title>
+    <style>
+        body { font-family: sans-serif; background: #fff5f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .wrapper { width: 100%; max-width: 400px; background: white; border-radius: 20px; padding: 20px; text-shadow: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        .prompt { font-size: 26px; font-weight: bold; color: #b91c1c; margin: 20px 0; }
+        .roman { font-size: 18px; color: #555; font-style: italic; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .item-card { background: #f9fafb; border: 3px solid #e5e7eb; border-radius: 16px; padding: 15px; cursor: pointer; font-size: 54px; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <h2>Language Game: कुठे आहे?</h2>
+        <div class="prompt" id="marathi-prompt">Loading...</div>
+        <div class="roman" id="roman-prompt"></div>
+        <div class="grid" id="grid-container"></div>
+    </div>
+
+    <script>
+        const items = [
+            { m: 'मांजर', r: 'Maan-jar', e: '🐶', eng: 'Cat' }, { m: 'मका', r: 'Ma-kaa', e: '🌽', eng: 'Corn' },
+            { m: 'मगा', r: 'Ma-ga', e: '☕', eng: 'Mug' }, { m: 'आंबा', r: 'Aam-baa', e: '🥭', eng: 'Mango' },
+            { m: 'भात', r: 'Bhaat', e: '🍚', eng: 'Rice' }, { m: 'पाणी', r: 'Paa-nee', e: '💧', eng: 'Water' }
+        ];
+        let currentItem = {};
+
+        function askQuestion() {
+            currentItem = items[Math.floor(Math.random() * items.length)];
+            document.getElementById('marathi-prompt').innerText = `${currentItem.m} कुठे आहे?`;
+            document.getElementById('roman-prompt').innerText = `"${currentItem.r} kuthe aahe?" (Where is the ${currentItem.eng}?)`;
+            
+            let pool = items.sort(() => 0.5 - Math.random()).slice(0, 4);
+            if(!pool.includes(currentItem)) pool[0] = currentItem;
+            pool.sort(() => 0.5 - Math.random());
+
+            const container = document.getElementById('grid-container');
+            container.innerHTML = '';
+            pool.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-card';
+                div.innerText = item.e;
+                div.onclick = () => {
+                    if(item.m === currentItem.m) {
+                        alert("🎉 Shabaash! (Great job!)");
+                        askQuestion();
+                    } else {
+                        alert("Try again! (पुन्हा प्रयत्न करा)");
+                    }
+                };
+                container.appendChild(div);
+            });
+        }
+        window.onload = askQuestion;
+    </script>
+</body>
+</html>

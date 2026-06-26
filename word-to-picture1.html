@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word-to-Picture Matcher</title>
+    <style>
+        body { font-family: 'Comic Sans MS', sans-serif; background: #eef7ff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .game-card { width: 100%; max-width: 400px; background: white; border-radius: 24px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); text-align: center; position: relative; overflow: hidden; }
+        .header { display: flex; justify-content: space-between; align-items: center; font-size: 20px; }
+        .stars { color: #ffd700; font-weight: bold; }
+        .word-display { font-size: 42px; font-weight: bold; color: #333; margin: 30px 0; letter-spacing: 2px; text-transform: capitalize; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .option-btn { font-size: 64px; background: #f0f0f0; border: 4px solid #ddd; border-radius: 20px; padding: 15px; cursor: pointer; transition: transform 0.1s, border-color 0.2s; }
+        .option-btn:active { transform: scale(0.95); }
+        .shop-btn { background: #ff6b6b; color: white; border: none; padding: 10px 20px; font-size: 18px; border-radius: 12px; cursor: pointer; }
+        .shop-panel { position: absolute; bottom: -100%; left: 0; width: 100%; background: #fff3f3; box-shadow: 0 -4px 15px rgba(0,0,0,0.15); transition: bottom 0.3s ease; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 20px 0; }
+        .shop-panel.open { bottom: 0; }
+        .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #ffe1e1; }
+        .buy-btn { background: #4caf50; color: white; border: none; padding: 5px 15px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .buy-btn:disabled { background: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="game-card">
+        <div class="header">
+            <button class="shop-btn" onclick="toggleShop()">🛍️ Shop</button>
+            <div class="stars">⭐ <span id="star-count">0</span></div>
+        </div>
+        <div class="word-display" id="target-word">Loading...</div>
+        <div class="options-grid" id="options-container"></div>
+        
+        <div class="shop-panel" id="shop-panel">
+            <h3 style="margin-top:0;">🌟 Star Shop 🌟</h3>
+            <div class="shop-item">
+                <span>⚡ Zap 1 Mistake</span>
+                <button class="buy-btn" id="zap-btn" onclick="buyZap()">3 ⭐</button>
+            </div>
+            <div class="shop-item">
+                <span>🗣️ Voice Replay</span>
+                <button class="buy-btn" id="voice-btn" onclick="buyVoice()">1 ⭐</button>
+            </div>
+            <button class="shop-btn" style="margin-top:15px; background:#777;" onclick="toggleShop()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const vocabulary = [
+            { word: 'fridge', emoji: ' refrigerator 🍎' }, { word: 'dog', emoji: '🐶' }, { word: 'car', emoji: '🚗' },
+            { word: 'apple', emoji: '🍎' }, { word: 'banana', emoji: '🍌' }, { word: 'cat', emoji: '🐱' },
+            { word: 'house', emoji: '🏠' }, { word: 'ball', emoji: '⚽' }, { word: 'sun', emoji: '☀️' }
+        ];
+        let stars = 0, currentRound = {}, options = [];
+
+        function speak(text) {
+            const msg = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(msg);
+        }
+
+        function initRound() {
+            currentRound = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+            document.getElementById('target-word').innerText = currentRound.word;
+            speak(`Find the ${currentRound.word}`);
+            
+            let pool = vocabulary.filter(v => v.word !== currentRound.word);
+            pool.sort(() => 0.5 - Math.random());
+            options = [currentRound, pool[0], pool[1], pool[2]].sort(() => 0.5 - Math.random());
+            
+            renderOptions();
+            updateShopButtons();
+        }
+
+        function renderOptions() {
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt.emoji.trim().split(' ')[0];
+                btn.onclick = () => checkAnswer(opt.word, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedWord, btn) {
+            if (selectedWord === currentRound.word) {
+                btn.style.borderColor = '#4caf50';
+                speak("Correct! Plus one star!");
+                stars++;
+                document.getElementById('star-count').innerText = stars;
+                setTimeout(initRound, 1500);
+            } else {
+                btn.style.borderColor = '#ff6b6b';
+                speak("Try again!");
+            }
+        }
+
+        function toggleShop() { document.getElementById('shop-panel').classList.toggle('open'); }
+        function updateShopButtons() {
+            document.getElementById('zap-btn').disabled = stars < 3;
+            document.getElementById('voice-btn').disabled = stars < 1;
+        }
+
+        function buyZap() {
+            if (stars >= 3) {
+                stars -= 3;
+                document.getElementById('star-count').innerText = stars;
+                const wrongBtn = Array.from(document.querySelectorAll('.option-btn')).find(b => b.onclick.toString().includes(currentRound.word) === false);
+                if (wrongBtn) wrongBtn.style.visibility = 'hidden';
+                toggleShop();
+            }
+        }
+
+        function buyVoice() {
+            if (stars >= 1) {
+                stars -= 1;
+                document.getElementById('star-count').innerText = stars;
+                speak(currentRound.word);
+                toggleShop();
+            }
+        }
+
+        window.onload = initRound;
+    </script>
+</body>
+</html>

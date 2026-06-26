@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Phonics Flashcards</title>
+    <style>
+        body { font-family: 'Comic Sans MS', sans-serif; background: #fffbeb; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { width: 90%; max-width: 380px; background: white; border-radius: 28px; box-shadow: 0 12px 28px rgba(0,0,0,0.1); padding: 25px; text-align: center; }
+        .emoji-view { font-size: 96px; margin: 20px 0; }
+        .word-view { font-size: 32px; color: #4b5563; font-weight: bold; margin-bottom: 30px; letter-spacing: 1px; }
+        .letters-row { display: flex; justify-content: space-around; gap: 10px; }
+        .letter-btn { background: #f3f4f6; border: 3px solid #d1d5db; font-size: 36px; font-weight: bold; width: 85px; height: 85px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .score-track { font-size: 20px; font-weight: bold; color: #d97706; margin-bottom: 10px; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="score-track">⭐ <span id="score">0</span></div>
+        <div class="emoji-view" id="card-emoji">🍎</div>
+        <div class="word-view" id="card-word">Apple</div>
+        <div class="letters-row" id="letters-box"></div>
+    </div>
+
+    <script>
+        const deck = [
+            { w: 'Apple', l: 'A', e: '🍎' }, { w: 'Banana', l: 'B', e: '🍌' }, { w: 'Cat', l: 'C', e: '🐱' },
+            { w: 'Dog', l: 'D', e: '🐶' }, { w: 'Elephant', l: 'E', e: '🐘' }, { w: 'Frog', l: 'F', e: '🐸' }
+        ];
+        let currentItem = {}, score = 0;
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        function speak(text) { window.speechSynthesis.speak(new SpeechSynthesisUtterance(text)); }
+
+        function drawCard() {
+            currentItem = deck[Math.floor(Math.random() * deck.length)];
+            document.getElementById('card-emoji').innerText = currentItem.e;
+            document.getElementById('card-word').innerText = currentItem.w;
+            speak(`${currentItem.w}. What letter does it start with?`);
+
+            let choices = [currentItem.l];
+            while(choices.length < 3) {
+                let rLetter = alphabet[Math.floor(Math.random() * 26)];
+                if(!choices.includes(rLetter)) choices.push(rLetter);
+            }
+            choices.sort(() => 0.5 - Math.random());
+
+            const box = document.getElementById('letters-box');
+            box.innerHTML = '';
+            choices.forEach(letter => {
+                const b = document.createElement('button');
+                b.className = 'letter-btn';
+                b.innerText = letter;
+                b.onclick = () => selectLetter(letter, b);
+                box.appendChild(b);
+            });
+        }
+
+        function selectLetter(letter, element) {
+            if (letter === currentItem.l) {
+                element.style.background = '#10b981';
+                element.style.color = 'white';
+                speak("Excellent! " + currentItem.l + " is for " + currentItem.w);
+                score++;
+                document.getElementById('score').innerText = score;
+                setTimeout(drawCard, 2000);
+            } else {
+                element.style.background = '#ef4444';
+                element.style.color = 'white';
+                speak("Try another letter!");
+            }
+        }
+
+        window.onload = drawCard;
+    </script>
+</body>
+</html>

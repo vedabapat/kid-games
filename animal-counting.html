@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Counting Game</title>
+    <style>
+        body { font-family: 'Comic Sans MS', sans-serif; background: #f0fff4; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .game-box { width: 100%; max-width: 420px; background: white; border-radius: 24px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
+        .game-box.challenge { background: #f3e8ff; border: 5px solid #a855f7; }
+        .grid-display { font-size: 48px; min-height: 120px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+        .text-helper { font-size: 20px; color: #666; font-weight: bold; margin-bottom: 20px; }
+        input { font-size: 28px; width: 80px; text-align: center; padding: 10px; border: 3px solid #cbd5e1; border-radius: 12px; outline: none; }
+        .btn { background: #22c55e; color: white; border: none; font-size: 22px; padding: 10px 24px; border-radius: 12px; cursor: pointer; margin-top: 15px; }
+        .challenge-title { color: #a855f7; display: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="game-box" id="game-box">
+        <h2 id="round-label">Level 1</h2>
+        <h2 class="challenge-title" id="challenge-title">⚠️ PURPLE CHALLENGE ROUND!</h2>
+        <div class="grid-display" id="animal-grid"></div>
+        <div class="text-helper" id="helper-text"></div>
+        <input type="number" id="answer-input" placeholder="?">
+        <br>
+        <button class="btn" onclick="submitAnswer()">Submit</button>
+    </div>
+
+    <script>
+        const animals = ['🦁', '🦆', '🐸', '🐵', '🐝', '🐧', '🐘'];
+        const words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+        let level = 1, currentCount = 0;
+
+        function speak(text) { window.speechSynthesis.speak(new SpeechSynthesisUtterance(text)); }
+
+        function startRound() {
+            document.getElementById('answer-input').value = '';
+            const isChallenge = level % 4 === 0;
+            const box = document.getElementById('game-box');
+            const cTitle = document.getElementById('challenge-title');
+            
+            if (isChallenge) {
+                box.classList.add('challenge');
+                cTitle.style.display = 'block';
+                currentCount = Math.floor(Math.random() * 4) + 7; // Numbers 7-10 for challenges
+                speak("Purple challenge round! Count carefully!");
+            } else {
+                box.classList.remove('challenge');
+                cTitle.style.display = 'none';
+                currentCount = Math.floor(Math.random() * 5) + 2; // Numbers 2-6
+            }
+
+            document.getElementById('round-label').innerText = `Level ${level}`;
+            const selectedAnimal = animals[Math.floor(Math.random() * animals.length)];
+            
+            document.getElementById('animal-grid').innerText = selectedAnimal.repeat(currentCount);
+            document.getElementById('helper-text').innerText = isChallenge ? "No helpers!" : `Spelling helper: ${words[currentCount]}`;
+            speak(`How many animals can you count?`);
+        }
+
+        function submitAnswer() {
+            const val = parseInt(document.getElementById('answer-input').value);
+            if (val === currentCount) {
+                speak(`🎉 Correct! It is ${words[currentCount]}!`);
+                level++;
+                setTimeout(startRound, 1500);
+            } else {
+                speak("Try counting them one more time!");
+            }
+        }
+
+        window.onload = startRound;
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wooden ABC Slots</title>
+    <style>
+        body { background: #d6af74; font-family: 'Comic Sans MS', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        .wood-board { width: 90%; max-width: 420px; background: linear-gradient(145deg, #8a5a36, #5c3a21); border: 12px solid #422817; border-radius: 20px; padding: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); position: relative; }
+        .slots-container { display: flex; justify-content: center; gap: 20px; margin-bottom: 80px; }
+        .slot { width: 80px; height: 80px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; box-shadow: inset 3px 3px 10px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; font-size: 42px; color: rgba(255,255,255,0.1); font-weight: bold; }
+        .tray { background: #b07d4e; width: 100%; padding: 20px 0; display: flex; justify-content: center; gap: 20px; position: absolute; bottom: 0; left: 0; border-top: 6px solid #5c3a21; }
+        .wood-block { width: 75px; height: 75px; background: #fcd34d; border: 4px solid #d97706; border-radius: 12px; font-size: 42px; font-weight: bold; color: #78350f; display: flex; align-items: center; justify-content: center; cursor: grab; user-select: none; transition: transform 0.2s; position: relative; }
+    </style>
+</head>
+<body>
+    <h2 style="color: #422817; margin-bottom: 5px;">Score: <span id="board-score">0</span></h2>
+    <div class="wood-board">
+        <div class="slots-container">
+            <div class="slot" data-letter="A">A</div>
+            <div class="slot" data-letter="B">B</div>
+            <div class="slot" data-letter="C">C</div>
+        </div>
+        <div class="tray" id="tray-zone">
+            <div class="wood-block" draggable="true" id="block-A" ondragstart="drag(event)">A</div>
+            <div class="wood-block" draggable="true" id="block-C" ondragstart="drag(event)">C</div>
+            <div class="wood-block" draggable="true" id="block-B" ondragstart="drag(event)">B</div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        function speak(text) { window.speechSynthesis.speak(new SpeechSynthesisUtterance(text)); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+
+        document.querySelectorAll('.slot').forEach(slot => {
+            slot.addEventListener('dragover', ev => ev.preventDefault());
+            slot.addEventListener('drop', ev => {
+                ev.preventDefault();
+                const data = ev.dataTransfer.getData("text");
+                const block = document.getElementById(data);
+                if(slot.getAttribute('data-letter') === block.innerText) {
+                    slot.innerHTML = "";
+                    slot.appendChild(block);
+                    slot.style.color = "#78350f";
+                    block.style.cursor = "default";
+                    block.setAttribute("draggable", "false");
+                    speak("Correct! Plus one!");
+                    score++;
+                    document.getElementById('board-score').innerText = score;
+                } else {
+                    speak("Try again!");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Spelling Arena</title>
+    <style>
+        body { font-family: sans-serif; background: #fcf6ff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .arena { width: 90%; max-width: 400px; background: white; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .emoji-box { font-size: 84px; margin-bottom: 10px; }
+        .slots { font-size: 36px; font-weight: bold; letter-spacing: 6px; margin: 20px 0; color: #4b5563; }
+        input { font-size: 24px; padding: 8px; width: 80%; border-radius: 8px; border: 2px solid #d1d5db; text-align: center; text-transform: lowercase; }
+        .hint-btn { background: #eab308; color: white; border: none; padding: 8px 16px; border-radius: 8px; margin-top: 15px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="arena">
+        <div class="emoji-box" id="animal-emoji">🦁</div>
+        <div class="slots" id="slots-view">_ _ _ _</div>
+        <input type="text" id="spelling-input" placeholder="Type here...">
+        <br>
+        <button class="hint-btn" onclick="triggerHint()">💡 HINT</button>
+        <button class="hint-btn" style="background:#3b82f6;" onclick="verifySpelling()">Check</button>
+    </div>
+
+    <script>
+        const collection = [{ name: 'lion', e: '🦁' }, { name: 'frog', e: '🐸' }, { name: 'duck', e: '🦆' }];
+        let currentIdx = 0, hintClicks = 0;
+
+        function speak(text) { window.speechSynthesis.speak(new SpeechSynthesisUtterance(text)); }
+
+        function loadAnimal() {
+            hintClicks = 0;
+            const item = collection[currentIdx];
+            document.getElementById('animal-emoji').innerText = item.e;
+            document.getElementById('slots-view').innerText = '_ '.repeat(item.name.length).trim();
+            document.getElementById('spelling-input').value = '';
+            speak(`Spell the animal shown on screen.`);
+        }
+
+        function triggerHint() {
+            const name = collection[currentIdx].name;
+            hintClicks++;
+            if (hintClicks === 1) {
+                document.getElementById('slots-view').innerText = name[0] + ' ' + '_ '.repeat(name.length - 1).trim();
+                speak(`It starts with the letter ${name[0]}`);
+            } else {
+                document.getElementById('slots-view').innerText = name.split('').join(' ');
+                setTimeout(() => { loadAnimal(); }, 1500);
+            }
+        }
+
+        function verifySpelling() {
+            const guess = document.getElementById('spelling-input').value.trim().toLowerCase();
+            if (guess === collection[currentIdx].name) {
+                speak("🎉 Correct! Excellent spelling!");
+                currentIdx = (currentIdx + 1) % collection.length;
+                setTimeout(loadAnimal, 1500);
+            } else {
+                speak("That is close! Try rearranging the letters.");
+            }
+        }
+        window.onload = loadAnimal;
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Train Sentence Builder</title>
+    <style>
+        body { font-family: 'Comic Sans MS', sans-serif; background: #f0fdfa; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .train-track { width: 100%; max-width: 500px; min-height: 80px; border-bottom: 8px dashed #6b7280; margin: 40px 0; display: flex; gap: 10px; align-items: flex-end; justify-content: center; padding-bottom: 10px; }
+        .word-block { background: #3b82f6; color: white; padding: 12px 20px; border-radius: 12px; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #1d4ed8; user-select: none; }
+        .word-pool { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; max-width: 500px; }
+    </style>
+</head>
+<body>
+    <h2>🚂 Word Train Adventure</h2>
+    <div class="train-track" id="track"></div>
+    <div class="word-pool" id="pool"></div>
+
+    <script>
+        const setup = { sentence: ["The", "big", "frog", "eats", "cake"], shuffled: ["eats", "The", "cake", "big", "frog"] };
+        let currentSequence = [];
+
+        function speak(text) { window.speechSynthesis.speak(new SpeechSynthesisUtterance(text)); }
+
+        function renderWorkspace() {
+            const poolDiv = document.getElementById('pool');
+            poolDiv.innerHTML = '';
+            setup.shuffled.forEach(word => {
+                if(!currentSequence.includes(word)) {
+                    const blk = document.createElement('div');
+                    blk.className = 'word-block';
+                    blk.innerText = word;
+                    blk.onclick = () => tapWord(word);
+                    poolDiv.appendChild(blk);
+                }
+            });
+
+            const trackDiv = document.getElementById('track');
+            trackDiv.innerHTML = '';
+            currentSequence.forEach(word => {
+                const blk = document.createElement('div');
+                blk.className = 'word-block';
+                blk.style.background = '#10b981';
+                blk.style.boxShadow = '0 4px 0 #047857';
+                blk.innerText = word;
+                trackDiv.appendChild(blk);
+            });
+
+            if(currentSequence.length === setup.sentence.length) {
+                evaluateSentence();
+            }
+        }
+
+        function tapWord(word) {
+            currentSequence.push(word);
+            speak(word);
+            renderWorkspace();
+        }
+
+        function evaluateSentence() {
+            const userString = currentSequence.join(' ');
+            const targetString = setup.sentence.join(' ');
+            if (userString === targetString) {
+                setTimeout(() => {
+                    speak("Choo Choo! " + targetString);
+                    alert("🚂 Train departs! Perfect Sentence!");
+                    currentSequence = [];
+                    renderWorkspace();
+                }, 500);
+            } else {
+                setTimeout(() => {
+                    speak("Let's re-order the train cars.");
+                    currentSequence = [];
+                    renderWorkspace();
+                }, 1000);
+            }
+        }
+
+        window.onload = renderWorkspace;
+    </script>
+</body>
+</html>
